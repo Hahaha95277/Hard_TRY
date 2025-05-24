@@ -1,3 +1,4 @@
+
 const imageInput = document.getElementById("imageInput");
 const canvas = document.getElementById("styledCanvas");
 const ctx = canvas.getContext("2d");
@@ -24,10 +25,17 @@ function openCamera() {
   imageInput.click();
 }
 
-function getLineOptions() {
-  const width = parseInt(document.getElementById("lineWidthSelect").value, 10);
-  const gap = parseInt(document.getElementById("lineGapSelect").value, 10);
-  return { width, gap };
+function getLineOptions(imgHeight) {
+  const autoStripe = document.getElementById("autoStripeCheckbox").checked;
+  if (autoStripe) {
+    const stripeCount = 512;
+    const stripeHeight = Math.max(1, Math.floor(imgHeight / stripeCount));
+    return { width: stripeHeight, gap: stripeHeight };
+  } else {
+    const width = parseInt(document.getElementById("lineWidthSelect").value, 10);
+    const gap = parseInt(document.getElementById("lineGapSelect").value, 10);
+    return { width, gap };
+  }
 }
 
 function redrawIfReady() {
@@ -47,7 +55,7 @@ function drawStylizedImage(img) {
   tempCanvas.height = img.height;
   tempCtx.drawImage(img, 0, 0);
 
-  const { width: lineWidth, gap: lineGap } = getLineOptions();
+  const { width: lineWidth, gap: lineGap } = getLineOptions(img.height);
 
   let imgData = tempCtx.getImageData(0, 0, img.width, img.height);
   let data = imgData.data;
